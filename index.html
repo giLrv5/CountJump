@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WGRE5XGNNF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-WGRE5XGNNF');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>夏恩集美的 100 以內數字順序練習</title>
+
+  <style>
+    @font-face {
+      font-family: "BpmfZihiSans";
+      src: url("assets/fonts/BpmfZihiSans-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --bg: #f7fbff;
+      --card: #ffffff;
+      --primary: #2d74da;
+      --accent: #ffb703;
+      --good: #138a36;
+      --bad: #d62828;
+      --text: #1f2937;
+      --bpmf-scale: 1.2;
+      --ui-scale: 1.12;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: "BpmfZihiSans", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+      background: linear-gradient(180deg, #e8f4ff 0%, #f7fbff 100%);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: calc(16px * var(--ui-scale));
+    }
+
+    .bpmf-text {
+      font-family: "BpmfZihiSans", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+      font-size: calc(1em * var(--bpmf-scale));
+      line-height: 1.2;
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      text-align: center;
+      color: var(--primary);
+      font-size: clamp(1.4rem, 2.8vw, 2rem);
+      line-height: 1.45;
+    }
+
+    .subtitle {
+      margin: 0 auto 18px;
+      max-width: 760px;
+      text-align: center;
+      font-size: 1rem;
+      line-height: 1.6;
+      background: #fff9e9;
+      border: 2px solid #ffe19b;
+      border-radius: 14px;
+      padding: 10px 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.05s ease, opacity 0.2s ease;
+      line-height: 1.35;
+      min-height: 72px;
+      white-space: nowrap;
+      overflow: visible;
+    }
+
+    button:active { transform: translateY(1px); }
+    .btn-main { background: var(--primary); color: white; }
+    .btn-sub { background: #eef5ff; color: var(--primary); border: 2px solid #c9defa; }
+
+    .demo {
+      margin: 0 auto 14px;
+      background: #eefaf2;
+      border: 2px solid #bde7cb;
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+
+    .demo-title {
+      font-weight: 700;
+      color: #216869;
+      margin-bottom: 6px;
+    }
+
+    .status {
+      text-align: center;
+      margin: 8px auto 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+      border: 2px solid #e6eef9;
+    }
+
+    .question {
+      margin: 0 0 14px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 2px dashed #d8e7fb;
+      background: #fbfdff;
+    }
+
+    .q-head {
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #274c77;
+    }
+
+    .sequence {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.8;
+    }
+
+    .num-box {
+      min-width: 38px;
+      text-align: center;
+      background: #edf4ff;
+      border-radius: 8px;
+      padding: 4px 6px;
+      border: 2px solid #d6e6ff;
+    }
+
+    input[type="number"] {
+      width: 72px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 2px solid #a6c4ee;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1d3557;
+      background: #fff;
+    }
+
+    input[type="number"].bad-input {
+      border-color: var(--bad);
+      background: #fff5f5;
+    }
+
+    .result {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .result.good { color: var(--good); }
+    .result.bad { color: var(--bad); }
+
+    .history-card {
+      margin-top: 16px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px;
+      border: 2px solid #e6eef9;
+    }
+
+    .history-title {
+      font-weight: 700;
+      color: #274c77;
+      margin-bottom: 8px;
+    }
+
+    .history-list {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+
+    .history-detail {
+      margin: 6px 0 10px;
+      padding-left: 20px;
+      font-size: 0.92rem;
+      color: #334155;
+    }
+
+    .btn-link {
+      background: #fff;
+      color: var(--primary);
+      border: 2px solid #c9defa;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-link[aria-disabled="true"] {
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <h1 id="titleText"></h1>
+    <p class="subtitle" id="subtitleText"></p>
+
+    <section id="demoCard" class="demo" aria-live="polite"></section>
+
+    <div class="toolbar">
+      <button id="checkBtn" class="btn-main"></button>
+      <button id="nextBtn" class="btn-sub"></button>
+      <button id="resetBtn" class="btn-sub"></button>
+      <a id="pdfBtn" class="btn-link" href="#" aria-disabled="true"></a>
+    </div>
+
+    <p id="status" class="status"></p>
+
+    <section id="questionList" class="card" aria-live="polite"></section>
+
+    <section id="historyCard" class="history-card" aria-live="polite">
+      <div class="history-title" id="historyTitle"></div>
+      <ol id="historyList" class="history-list">
+        <li id="historyEmpty"></li>
+      </ol>
+    </section>
+  </main>
+
+  <script>
+    const ROUND_SIZE = 5;
+    const REVIEW_KEY = "number-sequence-review-queue-v1";
+    let currentRound = [];
+
+    const questionList = document.getElementById("questionList");
+    const checkBtn = document.getElementById("checkBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const statusText = document.getElementById("status");
+    const demoCard = document.getElementById("demoCard");
+    const historyList = document.getElementById("historyList");
+    const pdfBtn = document.getElementById("pdfBtn");
+    const titleText = document.getElementById("titleText");
+    const subtitleText = document.getElementById("subtitleText");
+    const historyTitle = document.getElementById("historyTitle");
+    let answerHistory = [];
+
+    function toChineseNumber(num) {
+      const n = Number(num);
+      if (n <= 10) {
+        const ones = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+        return ones[n] || String(num);
+      }
+      if (n < 20) {
+        const ones = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+        return `十${ones[n % 10] || ""}`;
+      }
+      return String(num);
+    }
+
+    function z(text) {
+      return `<span class="bpmf-text">${text}</span>`;
+    }
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function createQuestion(type, forcedId = "") {
+      const length = randomInt(5, 6);
+      let start;
+      let step;
+      let label;
+
+      if (type === "plus2") {
+        step = 2;
+        start = randomInt(1, 100 - step * (length - 1));
+        label = "兩個一數";
+      } else if (type === "plus5") {
+        step = 5;
+        start = randomInt(1, 100 - step * (length - 1));
+        label = "五個一數";
+      } else if (type === "fixedGap") {
+        step = randomInt(3, 9);
+        start = randomInt(1, 100 - step * (length - 1));
+        label = "固定差距";
+      } else {
+        step = -randomInt(1, 9);
+        const minStart = 1 + Math.abs(step) * (length - 1);
+        start = randomInt(minStart, 100);
+        label = "倒序";
+      }
+
+      const sequence = Array.from({ length }, (_, i) => start + i * step);
+      const blankCount = randomInt(1, 2);
+      const candidates = shuffle(Array.from({ length }, (_, i) => i)).slice(0, blankCount);
+      const blanks = candidates.sort((a, b) => a - b);
+
+      const id = forcedId || `${type}-${start}-${step}-${length}-${blanks.join("_")}`;
+      return { id, type, label, step, sequence, blanks };
+    }
+
+    function getReviewQueue() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(REVIEW_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveReviewQueue(queue) {
+      localStorage.setItem(REVIEW_KEY, JSON.stringify(queue));
+    }
+
+    function randomType() {
+      const types = ["plus2", "plus5", "fixedGap", "reverse"];
+      return types[randomInt(0, types.length - 1)];
+    }
+
+    function renderDemo() {
+      const demoQuestion = createQuestion(randomType());
+      demoCard.innerHTML = `
+        <div class="demo-title">${z("示範")}：${z(demoQuestion.label)}</div>
+        <div class="sequence">${demoQuestion.sequence.map((n) => `<span class="num-box">${n}</span>`).join('<span>→</span>')}</div>
+      `;
+    }
+
+    function buildRound() {
+      const queue = getReviewQueue();
+      const picked = [];
+      const remainingQueue = [...queue];
+
+      while (picked.length < ROUND_SIZE && remainingQueue.length > 0) {
+        const item = remainingQueue.shift();
+        picked.push(createQuestion(item.type, item.id));
+      }
+
+      while (picked.length < ROUND_SIZE) {
+        picked.push(createQuestion(randomType()));
+      }
+
+      currentRound = shuffle(picked);
+      renderDemo();
+      renderQuestions();
+      const queueCount = getReviewQueue().length;
+      statusText.innerHTML = `${z("待練習題目")}：${queueCount}`;
+    }
+
+    function renderQuestions() {
+      questionList.innerHTML = "";
+
+      currentRound.forEach((q, idx) => {
+        const block = document.createElement("article");
+        block.className = "question";
+
+        const head = document.createElement("div");
+        head.className = "q-head";
+        head.innerHTML = `${z("第")}${z(toChineseNumber(idx + 1))}${z("題")}`;
+        block.appendChild(head);
+
+        const sequence = document.createElement("div");
+        sequence.className = "sequence";
+
+        q.sequence.forEach((num, i) => {
+          if (q.blanks.includes(i)) {
+            const input = document.createElement("input");
+            input.type = "number";
+            input.min = "1";
+            input.max = "100";
+            input.step = "1";
+            input.required = true;
+            input.setAttribute("data-q", idx);
+            input.setAttribute("data-i", i);
+            input.setAttribute("inputmode", "numeric");
+            input.setAttribute("aria-label", `第${toChineseNumber(idx + 1)}題第${toChineseNumber(i + 1)}格答案`);
+            input.addEventListener("input", () => {
+              const v = Number(input.value);
+              if (!Number.isInteger(v) || v < 1 || v > 100) {
+                input.classList.add("bad-input");
+              } else {
+                input.classList.remove("bad-input");
+              }
+            });
+            sequence.appendChild(input);
+          } else {
+            const box = document.createElement("span");
+            box.className = "num-box";
+            box.textContent = num;
+            sequence.appendChild(box);
+          }
+
+          if (i < q.sequence.length - 1) {
+            const arrow = document.createElement("span");
+            arrow.textContent = "→";
+            sequence.appendChild(arrow);
+          }
+        });
+
+        block.appendChild(sequence);
+
+        const result = document.createElement("div");
+        result.className = "result";
+        result.id = `result-${idx}`;
+        block.appendChild(result);
+
+        questionList.appendChild(block);
+      });
+    }
+
+    function renderHistory() {
+      if (answerHistory.length === 0) {
+        historyList.innerHTML = `<li>${z("目前還沒有作答紀錄")}</li>`;
+        pdfBtn.setAttribute("aria-disabled", "true");
+        return;
+      }
+
+      historyList.innerHTML = answerHistory.map((item, index) => {
+        const detail = item.questions.map((question, qIndex) => `
+          <li>
+            ${z("第")}${z(toChineseNumber(qIndex + 1))}${z("題")}：${question.display}
+            <div>${z("你的填答")}：${question.process}</div>
+            <div>${z("參考答案")}：${question.answers}</div>
+          </li>
+        `).join("");
+
+        return `
+          <li>
+            ${z("第")}${z(toChineseNumber(index + 1))}${z("回合")}：${z("答對")} ${item.correct}/${ROUND_SIZE}${z("題")}，${z("待加強")} ${item.wrong}${z("題")}
+            <ol class="history-detail">${detail}</ol>
+          </li>
+        `;
+      }).join("");
+      pdfBtn.setAttribute("aria-disabled", "false");
+    }
+
+    function exportHistoryToPdf() {
+      if (answerHistory.length === 0) {
+        alert("目前還沒有作答紀錄");
+        return;
+      }
+
+      const rows = answerHistory.map((item, index) => {
+        const detailRows = item.questions.map((question, qIndex) => `
+          <tr>
+            <td>${qIndex + 1}</td>
+            <td>${question.display}</td>
+            <td>${question.process}</td>
+            <td>${question.answers}</td>
+          </tr>
+        `).join("");
+
+        return `
+          <h3>第 ${index + 1} 回合｜答對 ${item.correct}/${ROUND_SIZE} 題｜待加強 ${item.wrong} 題｜${item.time}</h3>
+          <table>
+            <thead>
+              <tr><th>題號</th><th>題目</th><th>你的填答</th><th>參考答案</th></tr>
+            </thead>
+            <tbody>${detailRows}</tbody>
+          </table>
+        `;
+      }).join("");
+
+      const reportHtml = `<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><title>作答紀錄</title><style>body{font-family:"Noto Sans TC",Arial,"Microsoft JhengHei",sans-serif;padding:24px;}table{width:100%;border-collapse:collapse;margin-bottom:16px;}th,td{border:1px solid #999;padding:8px;vertical-align:top;}h2{margin:0 0 12px;}h3{margin:18px 0 8px;}</style></head><body><h2>夏恩集美數字練習｜作答紀錄</h2>${rows}<p>請在列印視窗選擇「另存為 PDF」。</p></body></html>`;
+
+      const win = window.open("", "_blank");
+      if (!win) {
+        alert("目前無法開啟新視窗，請確認瀏覽器是否阻擋彈出視窗");
+        return;
+      }
+      win.document.write(reportHtml);
+      win.document.close();
+      win.focus();
+      win.print();
+    }
+
+    function validateAndGrade() {
+      const inputs = Array.from(document.querySelectorAll("input[type='number']"));
+      let hasInvalid = false;
+
+      inputs.forEach((input) => {
+        const v = Number(input.value);
+        if (!Number.isInteger(v) || v < 1 || v > 100) {
+          input.classList.add("bad-input");
+          hasInvalid = true;
+        }
+      });
+
+      if (hasInvalid) {
+        alert("請輸入 1～100 的整數喔");
+        return;
+      }
+
+      const wrongItems = [];
+      let correctCount = 0;
+      const questionLogs = [];
+
+      currentRound.forEach((q, idx) => {
+        const result = document.getElementById(`result-${idx}`);
+        let allCorrect = true;
+        const blankLogs = [];
+
+        q.blanks.forEach((i) => {
+          const input = document.querySelector(`input[data-q='${idx}'][data-i='${i}']`);
+          const userValue = Number(input.value);
+          blankLogs.push(`第${i + 1}格填 ${userValue}`);
+          if (userValue !== q.sequence[i]) {
+            allCorrect = false;
+            input.classList.add("bad-input");
+          } else {
+            input.classList.remove("bad-input");
+          }
+        });
+
+        if (allCorrect) {
+          correctCount += 1;
+          result.className = "result good";
+          result.innerHTML = z("答對了，太棒了！");
+        } else {
+          wrongItems.push({ id: q.id, type: q.type });
+          result.className = "result bad";
+          result.innerHTML = `${z("再試試看～參考答案")}：${q.sequence.join("、")}`;
+        }
+
+        questionLogs.push({
+          display: q.sequence.map((num, i) => (q.blanks.includes(i) ? "□" : num)).join(" → "),
+          process: blankLogs.join("；"),
+          answers: q.blanks.map((i) => `第${i + 1}格=${q.sequence[i]}`).join("；")
+        });
+      });
+
+      const mergedMap = new Map();
+      getReviewQueue().forEach((item) => mergedMap.set(item.id, item));
+
+      // 這回合有出現的題目先移除；若需要再練習，會放回待練習清單。
+      currentRound.forEach((q) => mergedMap.delete(q.id));
+      wrongItems.forEach((item) => mergedMap.set(item.id, item));
+
+      const nextQueue = [...mergedMap.values()];
+      saveReviewQueue(nextQueue);
+
+      statusText.innerHTML = `${z("這回合答對")} ${correctCount}/${ROUND_SIZE}${z("題")}，${z("待加強")} ${wrongItems.length}${z("題")}`;
+
+      answerHistory.push({
+        correct: correctCount,
+        wrong: ROUND_SIZE - correctCount,
+        time: new Date().toLocaleString("zh-TW", { hour12: false }),
+        questions: questionLogs
+      });
+      renderHistory();
+    }
+
+    checkBtn.addEventListener("click", validateAndGrade);
+    nextBtn.addEventListener("click", buildRound);
+    resetBtn.addEventListener("click", () => {
+      localStorage.removeItem(REVIEW_KEY);
+      answerHistory = [];
+      renderHistory();
+      buildRound();
+      statusText.innerHTML = z("已清除紀錄");
+    });
+
+    pdfBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      exportHistoryToPdf();
+    });
+
+    window.addEventListener("DOMContentLoaded", () => {
+      titleText.innerHTML = z("夏恩集美數字練習");
+      subtitleText.innerHTML = z("每回合 5 題");
+      checkBtn.innerHTML = z("檢查答案");
+      nextBtn.innerHTML = z("下一回合");
+      resetBtn.innerHTML = z("清除紀錄");
+      pdfBtn.innerHTML = z("下載作答紀錄");
+      historyTitle.innerHTML = z("作答紀錄");
+      answerHistory = [];
+      renderHistory();
+      buildRound();
+    });
+  </script>
+</body>
+</html>
