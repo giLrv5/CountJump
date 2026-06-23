@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WGRE5XGNNF"></script>
   <script>
@@ -15,14 +16,6 @@
   <title>夏恩集美的 100 以內數字順序練習</title>
 
   <style>
-    @font-face {
-      font-family: "BpmfZihiSans";
-      src: url("assets/fonts/BpmfZihiSans-Regular.ttf") format("truetype");
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap;
-    }
-
     :root {
       --bg: #f7fbff;
       --card: #ffffff;
@@ -31,7 +24,8 @@
       --good: #138a36;
       --bad: #d62828;
       --text: #1f2937;
-      --bpmf-scale: 1.2;
+      --bpmf-scale: 1;
+      --bpmf-ruby-scale: 0.72;
       --ui-scale: 1.12;
     }
 
@@ -40,7 +34,7 @@
     body {
       margin: 0;
       padding: 24px;
-      font-family: "BpmfZihiSans", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
       background: linear-gradient(180deg, #e8f4ff 0%, #f7fbff 100%);
       color: var(--text);
       min-height: 100vh;
@@ -48,9 +42,52 @@
     }
 
     .bpmf-text {
-      font-family: "BpmfZihiSans", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+      display: inline;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
       font-size: calc(1em * var(--bpmf-scale));
-      line-height: 1.2;
+      line-height: 1.75;
+      vertical-align: middle;
+      white-space: pre-wrap;
+    }
+
+    .zhuyin-char {
+      display: inline-grid;
+      grid-template-columns: auto minmax(0.68em, max-content);
+      align-items: center;
+      column-gap: 0.04em;
+      isolation: isolate;
+      line-height: 1;
+      margin-inline: 0.04em;
+      ruby-align: center;
+      ruby-position: inter-character;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .zhuyin-char rb {
+      display: inline-block;
+      grid-column: 1;
+      line-height: 1.25;
+    }
+
+    .zhuyin-char rt {
+      color: #475569;
+      display: inline-block;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+      font-feature-settings: "salt";
+      font-size: calc(1em * var(--bpmf-ruby-scale));
+      font-variant-east-asian: salt;
+      font-weight: 700;
+      grid-column: 2;
+      letter-spacing: -0.06em;
+      line-height: 1;
+      min-width: 0.68em;
+      overflow: visible;
+      text-align: center;
+      text-combine-upright: none;
+      text-orientation: upright;
+      user-select: none;
+      writing-mode: vertical-rl;
     }
 
     .wrap {
@@ -101,8 +138,18 @@
     }
 
     button:active { transform: translateY(1px); }
-    .btn-main { background: var(--primary); color: white; }
+    button:disabled { opacity: 0.58; cursor: not-allowed; }
+    button:focus-visible,
+    .btn-link:focus-visible,
+    input[type="number"]:focus-visible {
+      outline: 3px solid rgba(45, 116, 218, 0.35);
+      outline-offset: 3px;
+    }
+    .btn-main { background: var(--primary); color: #fff; }
+    .btn-main .zhuyin-char rt { color: rgba(255, 255, 255, 0.88); }
     .btn-sub { background: #eef5ff; color: var(--primary); border: 2px solid #c9defa; }
+    .btn-sub .zhuyin-char rt,
+    .btn-link .zhuyin-char rt { color: #1d4ed8; }
 
     .demo {
       margin: 0 auto 14px;
@@ -210,7 +257,7 @@
     .history-list {
       margin: 0;
       padding-left: 18px;
-      line-height: 1.8;
+      line-height: 2.35;
       font-size: 0.95rem;
     }
 
@@ -218,13 +265,25 @@
       margin: 6px 0 10px;
       padding-left: 20px;
       font-size: 0.92rem;
+      line-height: 2.25;
       color: #334155;
+    }
+
+    .toolbar button,
+    .toolbar .btn-link {
+      min-width: 150px;
     }
 
     .btn-link {
       background: #fff;
       color: var(--primary);
       border: 2px solid #c9defa;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.35;
+      min-height: 72px;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
@@ -235,6 +294,15 @@
       opacity: 0.5;
       pointer-events: none;
       cursor: not-allowed;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      .toolbar { display: grid; grid-template-columns: 1fr 1fr; }
+      button, .btn-link { width: 100%; min-height: 58px; padding: 10px 12px; }
+      .card, .history-card { padding: 12px; }
+      .sequence { gap: 6px; font-size: 1rem; }
+      input[type="number"] { width: 64px; }
     }
   </style>
 </head>
@@ -281,7 +349,9 @@
     const titleText = document.getElementById("titleText");
     const subtitleText = document.getElementById("subtitleText");
     const historyTitle = document.getElementById("historyTitle");
+    const inputIndex = new Map();
     let answerHistory = [];
+    let hasCheckedCurrentRound = false;
 
     function toChineseNumber(num) {
       const n = Number(num);
@@ -296,8 +366,132 @@
       return String(num);
     }
 
+    const ZHUYIN_MAP = {
+      "夏": "ㄒㄧㄚˋ",
+      "恩": "ㄣ",
+      "集": "ㄐㄧˊ",
+      "美": "ㄇㄟˇ",
+      "數": "ㄕㄨˋ",
+      "字": "ㄗˋ",
+      "練": "ㄌㄧㄢˋ",
+      "習": "ㄒㄧˊ",
+      "每": "ㄇㄟˇ",
+      "回": "ㄏㄨㄟˊ",
+      "合": "ㄏㄜˊ",
+      "題": "ㄊㄧˊ",
+      "第": "ㄉㄧˋ",
+      "格": "ㄍㄜˊ",
+      "檢": "ㄐㄧㄢˇ",
+      "查": "ㄔㄚˊ",
+      "答": "ㄉㄚˊ",
+      "案": "ㄢˋ",
+      "下": "ㄒㄧㄚˋ",
+      "一": "ㄧ",
+      "清": "ㄑㄧㄥ",
+      "除": "ㄔㄨˊ",
+      "紀": "ㄐㄧˋ",
+      "錄": "ㄌㄨˋ",
+      "載": "ㄗㄞˋ",
+      "作": "ㄗㄨㄛˋ",
+      "示": "ㄕˋ",
+      "範": "ㄈㄢˋ",
+      "兩": "ㄌㄧㄤˇ",
+      "個": "ㄍㄜˋ",
+      "五": "ㄨˇ",
+      "固": "ㄍㄨˋ",
+      "定": "ㄉㄧㄥˋ",
+      "差": "ㄔㄚ",
+      "距": "ㄐㄩˋ",
+      "倒": "ㄉㄠˋ",
+      "序": "ㄒㄩˋ",
+      "待": "ㄉㄞˋ",
+      "目": "ㄇㄨˋ",
+      "前": "ㄑㄧㄢˊ",
+      "還": "ㄏㄞˊ",
+      "沒": "ㄇㄟˊ",
+      "有": "ㄧㄡˇ",
+      "你": "ㄋㄧˇ",
+      "的": "˙ㄉㄜ",
+      "填": "ㄊㄧㄢˊ",
+      "參": "ㄘㄢ",
+      "考": "ㄎㄠˇ",
+      "對": "ㄉㄨㄟˋ",
+      "加": "ㄐㄧㄚ",
+      "強": "ㄑㄧㄤˊ",
+      "這": "ㄓㄜˋ",
+      "了": "˙ㄌㄜ",
+      "太": "ㄊㄞˋ",
+      "棒": "ㄅㄤˋ",
+      "再": "ㄗㄞˋ",
+      "試": "ㄕˋ",
+      "看": "ㄎㄢˋ",
+      "已": "ㄧˇ",
+      "零": "ㄌㄧㄥˊ",
+      "二": "ㄦˋ",
+      "三": "ㄙㄢ",
+      "四": "ㄙˋ",
+      "六": "ㄌㄧㄡˋ",
+      "七": "ㄑㄧ",
+      "八": "ㄅㄚ",
+      "九": "ㄐㄧㄡˇ",
+      "十": "ㄕˊ"
+    };
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"]/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;"
+      }[char]));
+    }
+
+    const ZHUYIN_SEPARATOR = "&nbsp;&nbsp;&nbsp;";
+
+    function getSpacingType(char) {
+      if (/\s/u.test(char)) {
+        return "space";
+      }
+      if (/[\u3400-\u9fff]/u.test(char)) {
+        return "cjk";
+      }
+      if (/\d/u.test(char)) {
+        return "digit";
+      }
+      if (/[：:；;，,、。！？～~=＝□]/u.test(char)) {
+        return "punct";
+      }
+      return "other";
+    }
+
+    function shouldInsertZhuyinSeparator(previousType, currentType) {
+      if (!previousType || currentType === "space") {
+        return false;
+      }
+      return !(previousType === "digit" && currentType === "digit");
+    }
+
+    function renderZhuyin(text) {
+      let previousType = "";
+      return Array.from(String(text)).map((char) => {
+        const currentType = getSpacingType(char);
+        if (currentType === "space") {
+          return "";
+        }
+        const separator = shouldInsertZhuyinSeparator(previousType, currentType) ? ZHUYIN_SEPARATOR : "";
+        previousType = currentType;
+
+        const escapedChar = escapeHtml(char);
+        const zhuyin = ZHUYIN_MAP[char];
+        if (!zhuyin) {
+          return `${separator}${escapedChar}`;
+        }
+        return `${separator}<ruby class="zhuyin-char"><rb>${escapedChar}</rb><rt>${escapeHtml(zhuyin)}</rt></ruby>`;
+      }).join("");
+    }
+
     function z(text) {
-      return `<span class="bpmf-text">${text}</span>`;
+      return `<span class="bpmf-text">${renderZhuyin(text)}</span>`;
     }
 
     function randomInt(min, max) {
@@ -388,6 +582,8 @@
       }
 
       currentRound = shuffle(picked);
+      hasCheckedCurrentRound = false;
+      checkBtn.disabled = false;
       renderDemo();
       renderQuestions();
       const queueCount = getReviewQueue().length;
@@ -396,6 +592,8 @@
 
     function renderQuestions() {
       questionList.innerHTML = "";
+      inputIndex.clear();
+      const fragment = document.createDocumentFragment();
 
       currentRound.forEach((q, idx) => {
         const block = document.createElement("article");
@@ -403,7 +601,7 @@
 
         const head = document.createElement("div");
         head.className = "q-head";
-        head.innerHTML = `${z("第")}${z(toChineseNumber(idx + 1))}${z("題")}`;
+        head.innerHTML = z(`第${toChineseNumber(idx + 1)}題`);
         block.appendChild(head);
 
         const sequence = document.createElement("div");
@@ -421,14 +619,7 @@
             input.setAttribute("data-i", i);
             input.setAttribute("inputmode", "numeric");
             input.setAttribute("aria-label", `第${toChineseNumber(idx + 1)}題第${toChineseNumber(i + 1)}格答案`);
-            input.addEventListener("input", () => {
-              const v = Number(input.value);
-              if (!Number.isInteger(v) || v < 1 || v > 100) {
-                input.classList.add("bad-input");
-              } else {
-                input.classList.remove("bad-input");
-              }
-            });
+            inputIndex.set(`${idx}-${i}`, input);
             sequence.appendChild(input);
           } else {
             const box = document.createElement("span");
@@ -451,8 +642,10 @@
         result.id = `result-${idx}`;
         block.appendChild(result);
 
-        questionList.appendChild(block);
+        fragment.appendChild(block);
       });
+
+      questionList.appendChild(fragment);
     }
 
     function renderHistory() {
@@ -465,15 +658,15 @@
       historyList.innerHTML = answerHistory.map((item, index) => {
         const detail = item.questions.map((question, qIndex) => `
           <li>
-            ${z("第")}${z(toChineseNumber(qIndex + 1))}${z("題")}：${question.display}
-            <div>${z("你的填答")}：${question.process}</div>
-            <div>${z("參考答案")}：${question.answers}</div>
+            ${z(`第${toChineseNumber(qIndex + 1)}題：${question.display}`)}
+            <div>${z(`你的填答：${question.process}`)}</div>
+            <div>${z(`參考答案：${question.answers}`)}</div>
           </li>
         `).join("");
 
         return `
           <li>
-            ${z("第")}${z(toChineseNumber(index + 1))}${z("回合")}：${z("答對")} ${item.correct}/${ROUND_SIZE}${z("題")}，${z("待加強")} ${item.wrong}${z("題")}
+            ${z(`第${toChineseNumber(index + 1)}回合：答對${item.correct}/${ROUND_SIZE}題，待加強${item.wrong}題`)}
             <ol class="history-detail">${detail}</ol>
           </li>
         `;
@@ -491,9 +684,9 @@
         const detailRows = item.questions.map((question, qIndex) => `
           <tr>
             <td>${qIndex + 1}</td>
-            <td>${question.display}</td>
-            <td>${question.process}</td>
-            <td>${question.answers}</td>
+            <td>${escapeHtml(question.display)}</td>
+            <td>${escapeHtml(question.process)}</td>
+            <td>${escapeHtml(question.answers)}</td>
           </tr>
         `).join("");
 
@@ -522,7 +715,11 @@
     }
 
     function validateAndGrade() {
-      const inputs = Array.from(document.querySelectorAll("input[type='number']"));
+      if (hasCheckedCurrentRound) {
+        return;
+      }
+
+      const inputs = Array.from(inputIndex.values());
       let hasInvalid = false;
 
       inputs.forEach((input) => {
@@ -548,7 +745,7 @@
         const blankLogs = [];
 
         q.blanks.forEach((i) => {
-          const input = document.querySelector(`input[data-q='${idx}'][data-i='${i}']`);
+          const input = inputIndex.get(`${idx}-${i}`);
           const userValue = Number(input.value);
           blankLogs.push(`第${i + 1}格填 ${userValue}`);
           if (userValue !== q.sequence[i]) {
@@ -566,7 +763,7 @@
         } else {
           wrongItems.push({ id: q.id, type: q.type });
           result.className = "result bad";
-          result.innerHTML = `${z("再試試看～參考答案")}：${q.sequence.join("、")}`;
+          result.innerHTML = z(`再試試看～參考答案：${q.sequence.join("、")}`);
         }
 
         questionLogs.push({
@@ -595,7 +792,18 @@
         questions: questionLogs
       });
       renderHistory();
+      hasCheckedCurrentRound = true;
+      checkBtn.disabled = true;
     }
+
+    questionList.addEventListener("input", (event) => {
+      const input = event.target;
+      if (!(input instanceof HTMLInputElement) || input.type !== "number") {
+        return;
+      }
+      const v = Number(input.value);
+      input.classList.toggle("bad-input", !Number.isInteger(v) || v < 1 || v > 100);
+    });
 
     checkBtn.addEventListener("click", validateAndGrade);
     nextBtn.addEventListener("click", buildRound);
