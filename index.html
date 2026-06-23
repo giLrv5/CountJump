@@ -70,6 +70,11 @@
       line-height: 1.25;
     }
 
+    .zhuyin-separator {
+      display: inline-block;
+      width: 1.5em;
+    }
+
     .zhuyin-char rt {
       color: #475569;
       display: inline-block;
@@ -445,7 +450,7 @@
       }[char]));
     }
 
-    const ZHUYIN_SEPARATOR = "&nbsp;&nbsp;&nbsp;";
+    const ZHUYIN_SEPARATOR = '<span class="zhuyin-separator" aria-hidden="true">&nbsp;&nbsp;&nbsp;</span>';
 
     function getSpacingType(char) {
       if (/\s/u.test(char)) {
