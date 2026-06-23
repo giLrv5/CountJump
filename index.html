@@ -33,7 +33,8 @@
       --good: #138a36;
       --bad: #d62828;
       --text: #1f2937;
-      --bpmf-scale: 1.2;
+      --bpmf-scale: 1;
+      --bpmf-ruby-scale: 0.72;
       --ui-scale: 1.12;
     }
 
@@ -50,9 +51,39 @@
     }
 
     .bpmf-text {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
       font-family: "BpmfZihiSans", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
       font-size: calc(1em * var(--bpmf-scale));
+      gap: 0.04em;
+      line-height: 1.35;
+      vertical-align: middle;
+    }
+
+    .zhuyin-char {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.04em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .zhuyin-base {
       line-height: 1.2;
+    }
+
+    .zhuyin-mark {
+      color: #475569;
+      font-size: calc(1em * var(--bpmf-ruby-scale));
+      font-weight: 700;
+      letter-spacing: -0.08em;
+      line-height: 1;
+      min-width: 0.75em;
+      text-align: center;
+      user-select: none;
+      writing-mode: vertical-rl;
     }
 
     .wrap {
@@ -316,6 +347,75 @@
       return String(num);
     }
 
+    const ZHUYIN_MAP = {
+      "夏": "ㄒㄧㄚˋ",
+      "恩": "ㄣ",
+      "集": "ㄐㄧˊ",
+      "美": "ㄇㄟˇ",
+      "數": "ㄕㄨˋ",
+      "字": "ㄗˋ",
+      "練": "ㄌㄧㄢˋ",
+      "習": "ㄒㄧˊ",
+      "每": "ㄇㄟˇ",
+      "回": "ㄏㄨㄟˊ",
+      "合": "ㄏㄜˊ",
+      "題": "ㄊㄧˊ",
+      "檢": "ㄐㄧㄢˇ",
+      "查": "ㄔㄚˊ",
+      "答": "ㄉㄚˊ",
+      "案": "ㄢˋ",
+      "下": "ㄒㄧㄚˋ",
+      "一": "ㄧ",
+      "清": "ㄑㄧㄥ",
+      "除": "ㄔㄨˊ",
+      "紀": "ㄐㄧˋ",
+      "錄": "ㄌㄨˋ",
+      "載": "ㄗㄞˋ",
+      "作": "ㄗㄨㄛˋ",
+      "示": "ㄕˋ",
+      "範": "ㄈㄢˋ",
+      "兩": "ㄌㄧㄤˇ",
+      "個": "ㄍㄜˋ",
+      "五": "ㄨˇ",
+      "固": "ㄍㄨˋ",
+      "定": "ㄉㄧㄥˋ",
+      "差": "ㄔㄚ",
+      "距": "ㄐㄩˋ",
+      "倒": "ㄉㄠˋ",
+      "序": "ㄒㄩˋ",
+      "待": "ㄉㄞˋ",
+      "目": "ㄇㄨˋ",
+      "前": "ㄑㄧㄢˊ",
+      "還": "ㄏㄞˊ",
+      "沒": "ㄇㄟˊ",
+      "有": "ㄧㄡˇ",
+      "你": "ㄋㄧˇ",
+      "的": "ㄉㄜ˙",
+      "填": "ㄊㄧㄢˊ",
+      "參": "ㄘㄢ",
+      "考": "ㄎㄠˇ",
+      "對": "ㄉㄨㄟˋ",
+      "加": "ㄐㄧㄚ",
+      "強": "ㄑㄧㄤˊ",
+      "這": "ㄓㄜˋ",
+      "了": "ㄌㄜ˙",
+      "太": "ㄊㄞˋ",
+      "棒": "ㄅㄤˋ",
+      "再": "ㄗㄞˋ",
+      "試": "ㄕˋ",
+      "看": "ㄎㄢˋ",
+      "已": "ㄧˇ",
+      "零": "ㄌㄧㄥˊ",
+      "二": "ㄦˋ",
+      "三": "ㄙㄢ",
+      "四": "ㄙˋ",
+      "六": "ㄌㄧㄡˋ",
+      "七": "ㄑㄧ",
+      "八": "ㄅㄚ",
+      "九": "ㄐㄧㄡˇ",
+      "十": "ㄕˊ"
+    };
+
     function escapeHtml(value) {
       return String(value).replace(/[&<>"]/g, (char) => ({
         "&": "&amp;",
@@ -325,8 +425,19 @@
       }[char]));
     }
 
+    function renderZhuyin(text) {
+      return Array.from(String(text)).map((char) => {
+        const escapedChar = escapeHtml(char);
+        const zhuyin = ZHUYIN_MAP[char];
+        if (!zhuyin) {
+          return escapedChar;
+        }
+        return `<span class="zhuyin-char"><span class="zhuyin-base">${escapedChar}</span><span class="zhuyin-mark" aria-hidden="true">${escapeHtml(zhuyin)}</span></span>`;
+      }).join("");
+    }
+
     function z(text) {
-      return `<span class="bpmf-text">${escapeHtml(text)}</span>`;
+      return `<span class="bpmf-text">${renderZhuyin(text)}</span>`;
     }
 
     function randomInt(min, max) {
