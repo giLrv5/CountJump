@@ -257,7 +257,7 @@
     .history-list {
       margin: 0;
       padding-left: 18px;
-      line-height: 1.8;
+      line-height: 2.35;
       font-size: 0.95rem;
     }
 
@@ -265,6 +265,7 @@
       margin: 6px 0 10px;
       padding-left: 20px;
       font-size: 0.92rem;
+      line-height: 2.25;
       color: #334155;
     }
 
@@ -657,15 +658,15 @@
       historyList.innerHTML = answerHistory.map((item, index) => {
         const detail = item.questions.map((question, qIndex) => `
           <li>
-            ${z(`第${toChineseNumber(qIndex + 1)}題`)}：${z(question.display)}
-            <div>${z("你的填答")}：${z(question.process)}</div>
-            <div>${z("參考答案")}：${z(question.answers)}</div>
+            ${z(`第${toChineseNumber(qIndex + 1)}題：${question.display}`)}
+            <div>${z(`你的填答：${question.process}`)}</div>
+            <div>${z(`參考答案：${question.answers}`)}</div>
           </li>
         `).join("");
 
         return `
           <li>
-            ${z(`第${toChineseNumber(index + 1)}回合`)}：${z("答對")} ${item.correct}/${ROUND_SIZE}${z("題")}，${z("待加強")} ${item.wrong}${z("題")}
+            ${z(`第${toChineseNumber(index + 1)}回合：答對${item.correct}/${ROUND_SIZE}題，待加強${item.wrong}題`)}
             <ol class="history-detail">${detail}</ol>
           </li>
         `;
