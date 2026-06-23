@@ -89,18 +89,6 @@
       writing-mode: vertical-rl;
     }
 
-    .zhuyin-mark {
-      color: #475569;
-      font-size: calc(1em * var(--bpmf-ruby-scale));
-      font-weight: 700;
-      letter-spacing: -0.08em;
-      line-height: 1;
-      min-width: 0.75em;
-      text-align: center;
-      user-select: none;
-      writing-mode: vertical-rl;
-    }
-
     .wrap {
       max-width: 900px;
       margin: 0 auto;
@@ -276,10 +264,21 @@
       color: #334155;
     }
 
+    .toolbar button,
+    .toolbar .btn-link {
+      min-width: 150px;
+    }
+
     .btn-link {
       background: #fff;
       color: var(--primary);
       border: 2px solid #c9defa;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.35;
+      min-height: 72px;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
@@ -375,6 +374,8 @@
       "回": "ㄏㄨㄟˊ",
       "合": "ㄏㄜˊ",
       "題": "ㄊㄧˊ",
+      "第": "ㄉㄧˋ",
+      "格": "ㄍㄜˊ",
       "檢": "ㄐㄧㄢˇ",
       "查": "ㄔㄚˊ",
       "答": "ㄉㄚˊ",
@@ -440,14 +441,23 @@
       }[char]));
     }
 
+    function isCjk(char) {
+      return /[\u3400-\u9fff]/u.test(char);
+    }
+
     function renderZhuyin(text) {
+      let previousWasCjk = false;
       return Array.from(String(text)).map((char) => {
+        const currentIsCjk = isCjk(char);
+        const separator = previousWasCjk && currentIsCjk ? " " : "";
+        previousWasCjk = currentIsCjk;
+
         const escapedChar = escapeHtml(char);
         const zhuyin = ZHUYIN_MAP[char];
         if (!zhuyin) {
-          return escapedChar;
+          return `${separator}${escapedChar}`;
         }
-        return `<ruby class="zhuyin-char"><rb>${escapedChar}</rb><rt>${escapeHtml(zhuyin)}</rt></ruby>`;
+        return `${separator}<ruby class="zhuyin-char"><rb>${escapedChar}</rb><rt>${escapeHtml(zhuyin)}</rt></ruby>`;
       }).join("");
     }
 
@@ -562,7 +572,7 @@
 
         const head = document.createElement("div");
         head.className = "q-head";
-        head.innerHTML = `${z("第")}${z(toChineseNumber(idx + 1))}${z("題")}`;
+        head.innerHTML = z(`第${toChineseNumber(idx + 1)}題`);
         block.appendChild(head);
 
         const sequence = document.createElement("div");
@@ -619,15 +629,15 @@
       historyList.innerHTML = answerHistory.map((item, index) => {
         const detail = item.questions.map((question, qIndex) => `
           <li>
-            ${z("第")}${z(toChineseNumber(qIndex + 1))}${z("題")}：${question.display}
-            <div>${z("你的填答")}：${question.process}</div>
-            <div>${z("參考答案")}：${question.answers}</div>
+            ${z(`第${toChineseNumber(qIndex + 1)}題`)}：${z(question.display)}
+            <div>${z("你的填答")}：${z(question.process)}</div>
+            <div>${z("參考答案")}：${z(question.answers)}</div>
           </li>
         `).join("");
 
         return `
           <li>
-            ${z("第")}${z(toChineseNumber(index + 1))}${z("回合")}：${z("答對")} ${item.correct}/${ROUND_SIZE}${z("題")}，${z("待加強")} ${item.wrong}${z("題")}
+            ${z(`第${toChineseNumber(index + 1)}回合`)}：${z("答對")} ${item.correct}/${ROUND_SIZE}${z("題")}，${z("待加強")} ${item.wrong}${z("題")}
             <ol class="history-detail">${detail}</ol>
           </li>
         `;
