@@ -445,16 +445,40 @@
       }[char]));
     }
 
-    function isCjk(char) {
-      return /[\u3400-\u9fff]/u.test(char);
+    const ZHUYIN_SEPARATOR = "&nbsp;&nbsp;&nbsp;";
+
+    function getSpacingType(char) {
+      if (/\s/u.test(char)) {
+        return "space";
+      }
+      if (/[\u3400-\u9fff]/u.test(char)) {
+        return "cjk";
+      }
+      if (/\d/u.test(char)) {
+        return "digit";
+      }
+      if (/[：:；;，,、。！？～~=＝□]/u.test(char)) {
+        return "punct";
+      }
+      return "other";
+    }
+
+    function shouldInsertZhuyinSeparator(previousType, currentType) {
+      if (!previousType || currentType === "space") {
+        return false;
+      }
+      if (previousType === "space") {
+        return false;
+      }
+      return !(previousType === "digit" && currentType === "digit");
     }
 
     function renderZhuyin(text) {
-      let previousWasCjk = false;
+      let previousType = "";
       return Array.from(String(text)).map((char) => {
-        const currentIsCjk = isCjk(char);
-        const separator = previousWasCjk && currentIsCjk ? "   " : "";
-        previousWasCjk = currentIsCjk;
+        const currentType = getSpacingType(char);
+        const separator = shouldInsertZhuyinSeparator(previousType, currentType) ? ZHUYIN_SEPARATOR : "";
+        previousType = currentType;
 
         const escapedChar = escapeHtml(char);
         const zhuyin = ZHUYIN_MAP[char];
@@ -738,7 +762,7 @@
         } else {
           wrongItems.push({ id: q.id, type: q.type });
           result.className = "result bad";
-          result.innerHTML = `${z("再試試看～參考答案")}：${q.sequence.join("、")}`;
+          result.innerHTML = z(`再試試看～參考答案：${q.sequence.join("、")}`);
         }
 
         questionLogs.push({
