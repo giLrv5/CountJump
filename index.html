@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+  <link rel="preload" href="assets/fonts/BpmfZihiSans-Regular.ttf" as="font" type="font/ttf" crossorigin>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WGRE5XGNNF"></script>
   <script>
@@ -31,7 +33,8 @@
       --good: #138a36;
       --bad: #d62828;
       --text: #1f2937;
-      --bpmf-scale: 1.2;
+      --bpmf-scale: 1;
+      --bpmf-ruby-scale: 0.72;
       --ui-scale: 1.12;
     }
 
@@ -48,9 +51,39 @@
     }
 
     .bpmf-text {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
       font-family: "BpmfZihiSans", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
       font-size: calc(1em * var(--bpmf-scale));
+      gap: 0.04em;
+      line-height: 1.35;
+      vertical-align: middle;
+    }
+
+    .zhuyin-char {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.04em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .zhuyin-base {
       line-height: 1.2;
+    }
+
+    .zhuyin-mark {
+      color: #475569;
+      font-size: calc(1em * var(--bpmf-ruby-scale));
+      font-weight: 700;
+      letter-spacing: -0.08em;
+      line-height: 1;
+      min-width: 0.75em;
+      text-align: center;
+      user-select: none;
+      writing-mode: vertical-rl;
     }
 
     .wrap {
@@ -101,6 +134,13 @@
     }
 
     button:active { transform: translateY(1px); }
+    button:disabled { opacity: 0.58; cursor: not-allowed; }
+    button:focus-visible,
+    .btn-link:focus-visible,
+    input[type="number"]:focus-visible {
+      outline: 3px solid rgba(45, 116, 218, 0.35);
+      outline-offset: 3px;
+    }
     .btn-main { background: var(--primary); color: white; }
     .btn-sub { background: #eef5ff; color: var(--primary); border: 2px solid #c9defa; }
 
@@ -236,6 +276,15 @@
       pointer-events: none;
       cursor: not-allowed;
     }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      .toolbar { display: grid; grid-template-columns: 1fr 1fr; }
+      button, .btn-link { width: 100%; min-height: 58px; padding: 10px 12px; }
+      .card, .history-card { padding: 12px; }
+      .sequence { gap: 6px; font-size: 1rem; }
+      input[type="number"] { width: 64px; }
+    }
   </style>
 </head>
 
@@ -281,7 +330,9 @@
     const titleText = document.getElementById("titleText");
     const subtitleText = document.getElementById("subtitleText");
     const historyTitle = document.getElementById("historyTitle");
+    const inputIndex = new Map();
     let answerHistory = [];
+    let hasCheckedCurrentRound = false;
 
     function toChineseNumber(num) {
       const n = Number(num);
@@ -296,8 +347,97 @@
       return String(num);
     }
 
+    const ZHUYIN_MAP = {
+      "夏": "ㄒㄧㄚˋ",
+      "恩": "ㄣ",
+      "集": "ㄐㄧˊ",
+      "美": "ㄇㄟˇ",
+      "數": "ㄕㄨˋ",
+      "字": "ㄗˋ",
+      "練": "ㄌㄧㄢˋ",
+      "習": "ㄒㄧˊ",
+      "每": "ㄇㄟˇ",
+      "回": "ㄏㄨㄟˊ",
+      "合": "ㄏㄜˊ",
+      "題": "ㄊㄧˊ",
+      "檢": "ㄐㄧㄢˇ",
+      "查": "ㄔㄚˊ",
+      "答": "ㄉㄚˊ",
+      "案": "ㄢˋ",
+      "下": "ㄒㄧㄚˋ",
+      "一": "ㄧ",
+      "清": "ㄑㄧㄥ",
+      "除": "ㄔㄨˊ",
+      "紀": "ㄐㄧˋ",
+      "錄": "ㄌㄨˋ",
+      "載": "ㄗㄞˋ",
+      "作": "ㄗㄨㄛˋ",
+      "示": "ㄕˋ",
+      "範": "ㄈㄢˋ",
+      "兩": "ㄌㄧㄤˇ",
+      "個": "ㄍㄜˋ",
+      "五": "ㄨˇ",
+      "固": "ㄍㄨˋ",
+      "定": "ㄉㄧㄥˋ",
+      "差": "ㄔㄚ",
+      "距": "ㄐㄩˋ",
+      "倒": "ㄉㄠˋ",
+      "序": "ㄒㄩˋ",
+      "待": "ㄉㄞˋ",
+      "目": "ㄇㄨˋ",
+      "前": "ㄑㄧㄢˊ",
+      "還": "ㄏㄞˊ",
+      "沒": "ㄇㄟˊ",
+      "有": "ㄧㄡˇ",
+      "你": "ㄋㄧˇ",
+      "的": "ㄉㄜ˙",
+      "填": "ㄊㄧㄢˊ",
+      "參": "ㄘㄢ",
+      "考": "ㄎㄠˇ",
+      "對": "ㄉㄨㄟˋ",
+      "加": "ㄐㄧㄚ",
+      "強": "ㄑㄧㄤˊ",
+      "這": "ㄓㄜˋ",
+      "了": "ㄌㄜ˙",
+      "太": "ㄊㄞˋ",
+      "棒": "ㄅㄤˋ",
+      "再": "ㄗㄞˋ",
+      "試": "ㄕˋ",
+      "看": "ㄎㄢˋ",
+      "已": "ㄧˇ",
+      "零": "ㄌㄧㄥˊ",
+      "二": "ㄦˋ",
+      "三": "ㄙㄢ",
+      "四": "ㄙˋ",
+      "六": "ㄌㄧㄡˋ",
+      "七": "ㄑㄧ",
+      "八": "ㄅㄚ",
+      "九": "ㄐㄧㄡˇ",
+      "十": "ㄕˊ"
+    };
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"]/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;"
+      }[char]));
+    }
+
+    function renderZhuyin(text) {
+      return Array.from(String(text)).map((char) => {
+        const escapedChar = escapeHtml(char);
+        const zhuyin = ZHUYIN_MAP[char];
+        if (!zhuyin) {
+          return escapedChar;
+        }
+        return `<span class="zhuyin-char"><span class="zhuyin-base">${escapedChar}</span><span class="zhuyin-mark" aria-hidden="true">${escapeHtml(zhuyin)}</span></span>`;
+      }).join("");
+    }
+
     function z(text) {
-      return `<span class="bpmf-text">${text}</span>`;
+      return `<span class="bpmf-text">${renderZhuyin(text)}</span>`;
     }
 
     function randomInt(min, max) {
@@ -388,6 +528,8 @@
       }
 
       currentRound = shuffle(picked);
+      hasCheckedCurrentRound = false;
+      checkBtn.disabled = false;
       renderDemo();
       renderQuestions();
       const queueCount = getReviewQueue().length;
@@ -396,6 +538,8 @@
 
     function renderQuestions() {
       questionList.innerHTML = "";
+      inputIndex.clear();
+      const fragment = document.createDocumentFragment();
 
       currentRound.forEach((q, idx) => {
         const block = document.createElement("article");
@@ -421,14 +565,7 @@
             input.setAttribute("data-i", i);
             input.setAttribute("inputmode", "numeric");
             input.setAttribute("aria-label", `第${toChineseNumber(idx + 1)}題第${toChineseNumber(i + 1)}格答案`);
-            input.addEventListener("input", () => {
-              const v = Number(input.value);
-              if (!Number.isInteger(v) || v < 1 || v > 100) {
-                input.classList.add("bad-input");
-              } else {
-                input.classList.remove("bad-input");
-              }
-            });
+            inputIndex.set(`${idx}-${i}`, input);
             sequence.appendChild(input);
           } else {
             const box = document.createElement("span");
@@ -451,8 +588,10 @@
         result.id = `result-${idx}`;
         block.appendChild(result);
 
-        questionList.appendChild(block);
+        fragment.appendChild(block);
       });
+
+      questionList.appendChild(fragment);
     }
 
     function renderHistory() {
@@ -491,9 +630,9 @@
         const detailRows = item.questions.map((question, qIndex) => `
           <tr>
             <td>${qIndex + 1}</td>
-            <td>${question.display}</td>
-            <td>${question.process}</td>
-            <td>${question.answers}</td>
+            <td>${escapeHtml(question.display)}</td>
+            <td>${escapeHtml(question.process)}</td>
+            <td>${escapeHtml(question.answers)}</td>
           </tr>
         `).join("");
 
@@ -522,7 +661,11 @@
     }
 
     function validateAndGrade() {
-      const inputs = Array.from(document.querySelectorAll("input[type='number']"));
+      if (hasCheckedCurrentRound) {
+        return;
+      }
+
+      const inputs = Array.from(inputIndex.values());
       let hasInvalid = false;
 
       inputs.forEach((input) => {
@@ -548,7 +691,7 @@
         const blankLogs = [];
 
         q.blanks.forEach((i) => {
-          const input = document.querySelector(`input[data-q='${idx}'][data-i='${i}']`);
+          const input = inputIndex.get(`${idx}-${i}`);
           const userValue = Number(input.value);
           blankLogs.push(`第${i + 1}格填 ${userValue}`);
           if (userValue !== q.sequence[i]) {
@@ -595,7 +738,18 @@
         questions: questionLogs
       });
       renderHistory();
+      hasCheckedCurrentRound = true;
+      checkBtn.disabled = true;
     }
+
+    questionList.addEventListener("input", (event) => {
+      const input = event.target;
+      if (!(input instanceof HTMLInputElement) || input.type !== "number") {
+        return;
+      }
+      const v = Number(input.value);
+      input.classList.toggle("bad-input", !Number.isInteger(v) || v < 1 || v > 100);
+    });
 
     checkBtn.addEventListener("click", validateAndGrade);
     nextBtn.addEventListener("click", buildRound);
