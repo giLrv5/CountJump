@@ -70,11 +70,6 @@
       line-height: 1.25;
     }
 
-    .zhuyin-separator {
-      display: inline-block;
-      width: 1.5em;
-    }
-
     .zhuyin-char rt {
       color: #475569;
       display: inline-block;
@@ -450,7 +445,7 @@
       }[char]));
     }
 
-    const ZHUYIN_SEPARATOR = '<span class="zhuyin-separator" aria-hidden="true">&nbsp;&nbsp;&nbsp;</span>';
+    const ZHUYIN_SEPARATOR = "&nbsp;&nbsp;&nbsp;";
 
     function getSpacingType(char) {
       if (/\s/u.test(char)) {
@@ -472,9 +467,6 @@
       if (!previousType || currentType === "space") {
         return false;
       }
-      if (previousType === "space") {
-        return false;
-      }
       return !(previousType === "digit" && currentType === "digit");
     }
 
@@ -482,6 +474,9 @@
       let previousType = "";
       return Array.from(String(text)).map((char) => {
         const currentType = getSpacingType(char);
+        if (currentType === "space") {
+          return "";
+        }
         const separator = shouldInsertZhuyinSeparator(previousType, currentType) ? ZHUYIN_SEPARATOR : "";
         previousType = currentType;
 
