@@ -2,7 +2,6 @@
 <html lang="zh-Hant">
 <head>
   <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
-  <link rel="preload" href="assets/fonts/BpmfZihiSans-Regular.ttf" as="font" type="font/ttf" crossorigin>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WGRE5XGNNF"></script>
   <script>
@@ -17,14 +16,6 @@
   <title>夏恩集美的 100 以內數字順序練習</title>
 
   <style>
-    @font-face {
-      font-family: "BpmfZihiSans";
-      src: url("assets/fonts/BpmfZihiSans-Regular.ttf") format("truetype");
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap;
-    }
-
     :root {
       --bg: #f7fbff;
       --card: #ffffff;
@@ -43,7 +34,7 @@
     body {
       margin: 0;
       padding: 24px;
-      font-family: "BpmfZihiSans", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
       background: linear-gradient(180deg, #e8f4ff 0%, #f7fbff 100%);
       color: var(--text);
       min-height: 100vh;
@@ -51,27 +42,51 @@
     }
 
     .bpmf-text {
-      display: inline-flex;
-      align-items: center;
-      flex-wrap: wrap;
-      font-family: "BpmfZihiSans", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+      display: inline;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
       font-size: calc(1em * var(--bpmf-scale));
-      gap: 0.04em;
-      line-height: 1.35;
+      line-height: 1.75;
       vertical-align: middle;
     }
 
     .zhuyin-char {
-      display: inline-flex;
+      display: inline-grid;
+      grid-template-columns: auto minmax(0.68em, max-content);
       align-items: center;
-      justify-content: center;
-      gap: 0.04em;
+      column-gap: 0.04em;
+      isolation: isolate;
       line-height: 1;
+      margin-inline: 0.04em;
+      ruby-align: center;
+      ruby-position: inter-character;
+      vertical-align: middle;
       white-space: nowrap;
     }
 
-    .zhuyin-base {
-      line-height: 1.2;
+    .zhuyin-char rb {
+      display: inline-block;
+      grid-column: 1;
+      line-height: 1.25;
+    }
+
+    .zhuyin-char rt {
+      color: #475569;
+      display: inline-block;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+      font-feature-settings: "salt";
+      font-size: calc(1em * var(--bpmf-ruby-scale));
+      font-variant-east-asian: salt;
+      font-weight: 700;
+      grid-column: 2;
+      letter-spacing: -0.06em;
+      line-height: 1;
+      min-width: 0.68em;
+      overflow: visible;
+      text-align: center;
+      text-combine-upright: none;
+      text-orientation: upright;
+      user-select: none;
+      writing-mode: vertical-rl;
     }
 
     .zhuyin-mark {
@@ -390,7 +405,7 @@
       "沒": "ㄇㄟˊ",
       "有": "ㄧㄡˇ",
       "你": "ㄋㄧˇ",
-      "的": "ㄉㄜ˙",
+      "的": "˙ㄉㄜ",
       "填": "ㄊㄧㄢˊ",
       "參": "ㄘㄢ",
       "考": "ㄎㄠˇ",
@@ -398,7 +413,7 @@
       "加": "ㄐㄧㄚ",
       "強": "ㄑㄧㄤˊ",
       "這": "ㄓㄜˋ",
-      "了": "ㄌㄜ˙",
+      "了": "˙ㄌㄜ",
       "太": "ㄊㄞˋ",
       "棒": "ㄅㄤˋ",
       "再": "ㄗㄞˋ",
@@ -432,7 +447,7 @@
         if (!zhuyin) {
           return escapedChar;
         }
-        return `<span class="zhuyin-char"><span class="zhuyin-base">${escapedChar}</span><span class="zhuyin-mark" aria-hidden="true">${escapeHtml(zhuyin)}</span></span>`;
+        return `<ruby class="zhuyin-char"><rb>${escapedChar}</rb><rt>${escapeHtml(zhuyin)}</rt></ruby>`;
       }).join("");
     }
 
