@@ -47,6 +47,7 @@
       font-size: calc(1em * var(--bpmf-scale));
       line-height: 1.75;
       vertical-align: middle;
+      white-space: pre-wrap;
     }
 
     .zhuyin-char {
@@ -144,8 +145,11 @@
       outline: 3px solid rgba(45, 116, 218, 0.35);
       outline-offset: 3px;
     }
-    .btn-main { background: var(--primary); color: white; }
+    .btn-main { background: var(--primary); color: #fff; }
+    .btn-main .zhuyin-char rt { color: rgba(255, 255, 255, 0.88); }
     .btn-sub { background: #eef5ff; color: var(--primary); border: 2px solid #c9defa; }
+    .btn-sub .zhuyin-char rt,
+    .btn-link .zhuyin-char rt { color: #1d4ed8; }
 
     .demo {
       margin: 0 auto 14px;
@@ -449,7 +453,7 @@
       let previousWasCjk = false;
       return Array.from(String(text)).map((char) => {
         const currentIsCjk = isCjk(char);
-        const separator = previousWasCjk && currentIsCjk ? " " : "";
+        const separator = previousWasCjk && currentIsCjk ? "   " : "";
         previousWasCjk = currentIsCjk;
 
         const escapedChar = escapeHtml(char);
